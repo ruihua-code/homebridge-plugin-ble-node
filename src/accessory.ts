@@ -67,14 +67,17 @@ class BleNode implements AccessoryPlugin {
         callback(undefined, this.switchOn);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-
         console.log("value:", value, "onNode:", value ? this.onNode : this.offNode)
-        let res = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
-        if (!res.stdout.includes("true")) return
-        this.switchOn = value as boolean;
-        log.info("Switch state was set to: " + (this.switchOn ? "ON" : "OFF"));
-        callback();
-
+        try {
+          let res = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
+          console.log("spawnSync结果：", res)
+        } catch (e) {
+          console.log("catch:", e)
+        } finally {
+          this.switchOn = value as boolean;
+          log.info("Switch state was set to: " + (this.switchOn ? "ON" : "OFF"));
+          callback();
+        }
 
       });
 
