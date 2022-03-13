@@ -50,15 +50,10 @@ class BleNode implements AccessoryPlugin {
     characteristic.on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
       console.log("开关值:", value, spawnSync)
       this.switchOn = value as boolean;
-      callback()
       console.log(`开始执行脚本：node ${[value ? this.onNode : this.offNode]}`)
       let spawnSyncRes = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
-      if (spawnSyncRes.stderr) {
-        console.log(Error(spawnSyncRes.stderr.toString()))
-        process.exit(1)
-      }
       console.log("spawnSyncRes:", spawnSyncRes)
-      process.exit(0)
+      callback()
     })
 
     this.informationService = new hap.Service.AccessoryInformation()
