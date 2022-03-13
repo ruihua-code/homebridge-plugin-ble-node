@@ -10,7 +10,7 @@ import {
   Logging,
   Service
 } from "homebridge";
-import { execFile } from 'child_process'
+import { spawnSync } from 'child_process'
 /*
  * IMPORTANT NOTICE
  *
@@ -68,13 +68,12 @@ class BleNode implements AccessoryPlugin {
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
 
-        console.log("value:", value)
-        execFile("node", [value ? this.onNode : this.offNode], (error: any, stdout: any, stderr: any) => {
-          log.info("error:", error, "stdout:", stdout, "stderr:", stderr)
-          this.switchOn = value as boolean;
-          log.info("Switch state was set to: " + (this.switchOn ? "ON" : "OFF"));
-          callback();
-        })
+        console.log("value:", value, "onNode:", value ? this.onNode : this.offNode)
+        let res = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
+        if (!res.stdout.includes("true")) return
+        this.switchOn = value as boolean;
+        log.info("Switch state was set to: " + (this.switchOn ? "ON" : "OFF"));
+        callback();
 
 
       });
