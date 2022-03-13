@@ -61,25 +61,21 @@ class BleNode implements AccessoryPlugin {
     this.offNode = config.offNode;
 
     this.switchService = new hap.Service.Switch(this.name);
-    this.switchService.getCharacteristic(hap.Characteristic.On)
-      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info("Current state of the switch was returned: " + (this.switchOn ? "ON" : "OFF"));
-        callback(undefined, this.switchOn);
-      })
-      .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-        console.log("value:", value, "onNode:", value ? this.onNode : this.offNode)
-        try {
-          let res = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
-          console.log("spawnSync结果：", res)
-        } catch (e) {
-          console.log("catch:", e)
-        } finally {
-          this.switchOn = value as boolean;
-          log.info("Switch state was set to: " + (this.switchOn ? "ON" : "OFF"));
-          callback();
-        }
+    const characteristic = this.switchService.getCharacteristic(hap.Characteristic.On);
 
-      });
+    characteristic.on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+      log.info("Current state of the switch was returned: " + (this.switchOn ? "ON" : "OFF"));
+      callback(undefined, this.switchOn);
+    })
+
+    characteristic.on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+      console.log("开关值:", value)
+      this.switchOn = value as boolean;
+      callback()
+      console.log(`开始执行脚本：node ${[value ? this.onNode : this.offNode]}`)
+      let spawnSyncRes = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
+      console.log("spawnSyncRes:", spawnSyncRes)
+    })
 
     this.informationService = new hap.Service.AccessoryInformation()
       .setCharacteristic(hap.Characteristic.Manufacturer, "Custom Manufacturer")
