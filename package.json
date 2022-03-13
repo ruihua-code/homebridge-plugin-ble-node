@@ -1,6 +1,6 @@
 {
   "name": "homebridge-plugin-ble-node",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "homebridge plugin accessory,node.js bel controller",
   "main": "dist/accessory.js",
   "scripts": {
