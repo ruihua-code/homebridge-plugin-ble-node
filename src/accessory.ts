@@ -12,7 +12,6 @@ import {
 } from "homebridge";
 import { spawnSync } from 'child_process'
 const noble = require("@abandonware/noble");
-const shell = require('shelljs');
 
 const serviceUuids = ["ffe0"];
 const characteristicUUID = "ffe2";
