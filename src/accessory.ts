@@ -10,7 +10,7 @@ import {
   Logging,
   Service
 } from "homebridge";
-import { exec } from 'shelljs';
+import { execFile } from 'child_process'
 /*
  * IMPORTANT NOTICE
  *
@@ -67,13 +67,15 @@ class BleNode implements AccessoryPlugin {
         callback(undefined, this.switchOn);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-        exec(value ? this.onNode : this.offNode, (code: number, stdout: any) => {
-          log.info("code:", code, "stdout:", stdout)
-          if (code !== 0) return
+
+        console.log("value:", value)
+        execFile("node", [value ? this.onNode : this.offNode], (error: any, stdout: any, stderr: any) => {
+          log.info("error:", error, "stdout:", stdout, "stderr:", stderr)
           this.switchOn = value as boolean;
           log.info("Switch state was set to: " + (this.switchOn ? "ON" : "OFF"));
           callback();
         })
+
 
       });
 
