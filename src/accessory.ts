@@ -48,10 +48,10 @@ class BleNode implements AccessoryPlugin {
     })
 
     characteristic.on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-      this.switchOn = value as boolean;
       console.log(`执行脚本：node ${[value ? this.onNode : this.offNode]}`)
       let spawnSyncRes = spawnSync("node", [value ? this.onNode : this.offNode], { encoding: "utf-8" })
       console.log("执行结果:", spawnSyncRes.stdout)
+      this.switchOn = value as boolean;
       callback()
     })
 
