@@ -47,8 +47,7 @@ class BleNode implements AccessoryPlugin {
     characteristic.on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
       let spawnSyncRes = spawnSync("node", [this.initNode], { encoding: "utf-8" })
       console.log("初始化执行结果:", spawnSyncRes.stdout.toString())
-
-      this.switchOn = spawnSyncRes.stdout.toString() === '1'
+      this.switchOn = spawnSyncRes.stdout.includes('1')
       log.info("Current state of the switch was returned: " + (this.switchOn ? "ON" : "OFF"));
       callback(undefined, this.switchOn);
     })
