@@ -41,13 +41,13 @@ class BleNode implements AccessoryPlugin {
     this.offNode = config.offNode;
     this.initNode = config.initNode;
 
+    let spawnSyncRes = spawnSync("node", [this.initNode], { encoding: "utf-8" })
+    console.log("初始化执行结果:", spawnSyncRes.stdout.toString())
+    this.switchOn = spawnSyncRes.stdout.includes('1')
     this.switchService = new hap.Service.Switch(this.name);
     const characteristic = this.switchService.getCharacteristic(hap.Characteristic.On);
 
     characteristic.on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-      let spawnSyncRes = spawnSync("node", [this.initNode], { encoding: "utf-8" })
-      console.log("初始化执行结果:", spawnSyncRes.stdout.toString())
-      this.switchOn = spawnSyncRes.stdout.includes('1')
       log.info("Current state of the switch was returned: " + (this.switchOn ? "ON" : "OFF"));
       callback(undefined, this.switchOn);
     })
