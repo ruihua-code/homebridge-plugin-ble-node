@@ -41,9 +41,13 @@ class BleNode implements AccessoryPlugin {
     this.offNode = config.offNode;
     this.initNode = config.initNode;
 
+    /**
+     * 判断开关状态，1:打开状态，0:关闭状态
+     */
     let spawnSyncRes = spawnSync("node", [this.initNode], { encoding: "utf-8" })
     console.log("初始化执行结果:", spawnSyncRes.stdout.toString())
     this.switchOn = spawnSyncRes.stdout.includes('1')
+
     this.switchService = new hap.Service.Switch(this.name);
     const characteristic = this.switchService.getCharacteristic(hap.Characteristic.On);
 
