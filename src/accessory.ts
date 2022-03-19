@@ -28,6 +28,7 @@ class BleNode implements AccessoryPlugin {
   private readonly name: string;
   private readonly onNode: any;
   private readonly offNode: any;
+  private readonly initNode: any;
   private switchOn = false;
 
   private readonly switchService: Service;
@@ -38,11 +39,16 @@ class BleNode implements AccessoryPlugin {
     this.name = config.name;
     this.onNode = config.onNode;
     this.offNode = config.offNode;
+    this.initNode = config.initNode;
 
     this.switchService = new hap.Service.Switch(this.name);
     const characteristic = this.switchService.getCharacteristic(hap.Characteristic.On);
 
     characteristic.on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+      let spawnSyncRes = spawnSync("node", [this.initNode], { encoding: "utf-8" })
+      console.log("初始化执行结果:", spawnSyncRes.stdout.toString())
+
+      this.switchOn = spawnSyncRes.stdout.toString() === '1'
       log.info("Current state of the switch was returned: " + (this.switchOn ? "ON" : "OFF"));
       callback(undefined, this.switchOn);
     })
